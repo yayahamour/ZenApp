@@ -5,32 +5,23 @@ import streamlit as st
 from datetime import date
 
 class Patient():
-    def __init__(self, id, name):
-        self.id = id
+    def __init__(self, login, name, surname):
+        self.login = login
         self.name = name
+        self.surname = surname
     
     def home(self):
-
-        
+        st.write("Welcome "+ self.name + " " + self.surname)
         calendar = st.date_input('Date', max_value=date.today())
         #test dynamique, remplacer par la requete en fonction du jour :
-        tab = []
-        for i in range(0,6):
-            tab.append('''
-     It was the best of times, it was the worst of times, it was
-     the age of wisdom, it was the age of foolishness, it wa
-     the epoch of belief, it was #the epoch of incredulity, it
-     was the season of Light, it was the season of Darkness, it
-     was the spring of hope, it was the winter of despair, (...) 
-     '''+ str(i))
-        #fin
+        text = "" #appel api en fonction du calendar
         if (calendar == date.today()):
-            txt = st.text_area("Personal Diary " + str(calendar), tab[calendar.day], height=200)
+            txt = st.text_area("Personal Diary " + str(calendar), text, height=200)
             if st.button("Update"):
                 #ajouter modif pour envoie bdd
                 st.write("modif")
         else:
             st.write("Personal Diary " + str(calendar))
-            st.code(tab[calendar.day], language="markdown")
+            st.code(text, language="markdown")
         
         
