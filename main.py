@@ -1,12 +1,17 @@
 import streamlit as st
-from login import Login
+import login
 from dotenv import load_dotenv
 from pathlib import Path
 
 def main():
-    dotenv_path = Path("var.env")
-    load_dotenv(dotenv_path=dotenv_path)
-    log = Login()     
-    log.login()
-    
-main()
+
+    if 'user' in st.session_state:
+        st.session_state.user.home()
+    else:
+        log = login.component()
+        if log: st.session_state.user = log
+        
+
+if __name__ == "__main__":
+    load_dotenv(dotenv_path=Path(".env"))
+    main()

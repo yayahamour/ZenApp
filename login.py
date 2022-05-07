@@ -1,31 +1,33 @@
+from lib2to3.pytree import Base
 import os
 import streamlit as st
 from patient import Patient
 from coach import Coach
-
-class Login():
+import requests
        
-    def patient_page(self, login):
-        #debut
-        is_admin, name, surname = None, "yanis", "ham"#a changer avec l'api
-        if(login == 'yanis'):
-            is_admin = False
-        elif(login == 'admin'):
-            is_admin = True
-        #fin
-        if(is_admin == False):
-            page = Patient(login, name, surname)
-            page.home()
-        elif(is_admin == True):
-            page = Coach(login, name, surname)
-            page.home()
+def handle_api(self, username):
+    api_url = os.environ.get("API_URL")
     
+    url = f"{api_url}/user?username={username}"
+    response = requests.get(url)
+    if response.status_code != 200:
+        st.error("This user does not exist or can't be fetched at the moment")
+        return
+
     
-    
-    def login(self):
-        login = st.sidebar.text_input("Login")
-        #password = st.sidebar.text_input("Password")
-        st.sidebar.button("Login", on_click=self.patient_page(login))
+    data = response.json()
+    if data["is_admin"]:
+        user = Coach(data["username"], data["first_name"], data["last_name"])
+    else:
+        user = Patient()
+
+    return user
+
+
+def component(self):
+    login = st.sidebar.text_input("Login")
+    if st.sidebar.button("Login") & (login != ""):
+        return handle_api(login)
             
         
         

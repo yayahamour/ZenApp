@@ -2,15 +2,16 @@ import streamlit as st
 from datetime import date
 import hashlib
 class Coach():
-    def __init__(self, login, name, surname):
-        self.login = login
-        self.name = name
-        self.surname = surname
+    def __init__(self, username, first_name, last_name):
+        self.username = username
+        self.first_name = first_name
+        self.last_name = last_name
 
     def home(self):
         #ajout requete pour completer
-        st.write("Welcome "+ self.name + " " + self.surname)
+        st.write("Welcome "+ self.first_name + " " + self.last_name)
         option = st.radio("Option", ["Graph", "Management"])
+
         if(option == "Graph"):
             user = st.selectbox("User", ["all", "user1", "user2"])
             type_recherche =st.radio("Time", ["to day", "last week", "last month", "last year", "personalise"])
@@ -19,13 +20,14 @@ class Coach():
             if (type_recherche == "personalise"):
                 start = st.date_input('Start', max_value=date.today())
                 end = st.date_input('End', max_value=date.today(), min_value=start)
+                
         if(option == "Management"):
             action = st.radio("Action", ["Add", "Update"])
             if (action == "Add"):
-                name = st.text_input("Name")
-                surname = st.text_input("Surname")
+                first_name = st.text_input("first_name")
+                last_name = st.text_input("last_name")
                 #password = st.text_input("User Password",)
-                speudo = st.text_input("User Login")
+                speudo = st.text_input("User username")
                 if (st.button("Add")):
                     pass
                 #ajout bdd
@@ -34,10 +36,10 @@ class Coach():
                 user_select = st.selectbox("User", ["user"])
                 if(st.button("Modification")):
                     #ajout pre remplissage en foncion de celui selectionner
-                    name = st.text_input("Name")
-                    surname = st.text_input("Surname")
+                    first_name = st.text_input("first_name")
+                    last_name = st.text_input("last_name")
                     #password = st.text_input("User Password",)
-                    speudo = st.text_input("User Login")
+                    speudo = st.text_input("User username")
                     if(st.button("Update")):
                         pass
                     #ajout base
