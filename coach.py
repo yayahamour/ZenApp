@@ -3,7 +3,7 @@ import streamlit as st
 from datetime import date
 import os
 import requests
-API_URL = os.environ.get("API_URL")
+from api_functions import list_users, create_user, update_user, delete_user
 
 class Coach():
     def __init__(self, username, first_name, last_name):
@@ -16,7 +16,7 @@ class Coach():
         option = st.radio("Option", ["Graph", "Management"])
 
         if(option == "Graph"):
-            user_list = self.get_users(keep_admins=False)
+            user_list = list_users(keep_admins=False)
             usernames = [user["username"] for user in user_list]
             user = st.selectbox("User", usernames)
 
@@ -33,10 +33,10 @@ class Coach():
                 username = st.text_input("User username")
 
                 if (st.button("Add")):
-                    st.write(self.create_user(first_name, last_name, username))
+                    st.write(create_user(first_name, last_name, username))
 
             elif (action == "Update"):
-                user_list = self.get_users(keep_admins=True)
+                user_list = list_users(keep_admins=True)
                 usernames = [user["username"] for user in user_list]
                 selected_user = st.selectbox("User", usernames)
 
@@ -46,49 +46,7 @@ class Coach():
                 selected_user["last_name"] = st.text_input("last_name", selected_user["last_name"])
 
                 if(st.button("Update")):
-                    st.write(self.update_user(selected_user))
+                    st.write(update_user(selected_user))
 
                 if(st.button("Delete")):
-                    st.write(self.delete_user(selected_user["username"]))
-                
-
-
-    def get_users(self, keep_admins):
-        url = f"{API_URL}/userlist?admins={keep_admins}"
-        response = requests.get(url)
-
-        if response.status_code == 200:
-            return response.json()
-        else:
-            st.error("Can't fetch the user list at the moment")
-
-    def create_user(self, first_name, last_name, username):
-        API_URL = os.environ.get("API_URL")
-        infos = {
-            "first_name": first_name,
-            "last_name": last_name,
-            "username": username
-        }
-        response = requests.post(f"{API_URL}/user", json=infos)
-        if response.status_code == 200:
-            return f"Successfully created {infos['username']}"
-        else:
-            return "Can't create this user"
-
-    def update_user(self, infos):
-        API_URL = os.environ.get("API_URL")
-
-        response = requests.put(f"{API_URL}/user", json=infos)
-        if response.status_code == 200:
-            return f"Successfully updated user {infos['username']}"
-        else:
-            return "Can't update this user"
-
-    def delete_user(self, username):
-        API_URL = os.environ.get("API_URL")
-        response = requests.delete(f"{API_URL}/user?username={username}")
-
-        if response.status_code == 200:
-            return f"Successfully deleted user {username}"
-        else:
-            return "Can't delete this user"
+                    st.write(delete_user(selected_user["username"]))
