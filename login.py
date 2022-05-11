@@ -4,10 +4,10 @@ import streamlit as st
 from patient import Patient
 from coach import Coach
 import requests
-API_URL = os.environ.get("API_URL")
        
 def handle_api(username):
-    
+    API_URL = os.environ.get("API_URL")
+
     url = f"{API_URL}/user?username={username}"
     response = requests.get(url)
     if response.status_code != 200:
