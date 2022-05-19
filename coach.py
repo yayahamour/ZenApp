@@ -1,29 +1,61 @@
-from turtle import onclick
 import streamlit as st
-from datetime import date
-import os
-import requests
-from api_functions import list_users, create_user, update_user, delete_user
-
+from datetime import date, timedelta
+from api_functions import get_text, get_emotions, list_users, create_user, update_user, delete_user
+import pandas as pd
+import matplotlib.pyplot as plt
 class Coach():
     def __init__(self, username, first_name, last_name):
         self.username = username
         self.first_name = first_name
         self.last_name = last_name
 
+
+    def graph(self, dict):
+        df = pd.DataFrame.from_dict(dict)
+        sizes = df.groupby('emotion').count().reset_index()["text"]
+        labels = df['emotion'].unique()      
+        fig, ax = plt.subplots()
+        ax.pie(sizes, labels=labels,autopct='%1.1f%%', startangle=15)
+        ax.axis('equal')
+        ax.set_facecolor('black')
+        st.pyplot(fig)
+            
+            
+            
     def home(self):
         st.write("Welcome "+ self.first_name + " " + self.last_name)
-        option = st.radio("Option", ["Graph", "Management"])
+        option = st.radio("Option", ["Informations", "Management"])
 
-        if(option == "Graph"):
+        if(option == "Informations"):
             user_list = list_users(keep_admins=False)
-            usernames = [user["username"] for user in user_list]
+            usernames = ["all"] + [user["username"] for user in user_list]
             user = st.selectbox("User", usernames)
-
-            research_type =st.radio("Time", ["to day", "last week", "last month", "last year", "custom"])
+            if (user != "all"):
+                text_date = st.date_input('Text date', max_value=date.today())
+                response = get_text(user, text_date)
+                st.code(response["text"], language="markdown")
+                if (response.get("emotion") != None):
+                    st.write(response["emotion"])
+            choix =  ["last week", "last month", "last year", "custom"]
+            research_type =st.radio("Time", choix)
             if (research_type == "custom"):
                 start = st.date_input('Start', max_value=date.today())
                 end = st.date_input('End', max_value=date.today(), min_value=start)
+            elif(research_type == "last week"):
+                end = date.today()
+                start = end - timedelta(days=7)
+            elif(research_type == "last month"):
+                end = date.today()
+                start = end - timedelta(weeks=4)
+            elif(research_type == "last year"):
+                end = date.today()
+                start = end - timedelta(weeks=52)
+            if (user == "all"):
+                response = get_emotions(start = start, end=end)
+            else:
+                response = get_emotions(start = start, end=end, username= user)
+            if (type(response) is list):
+                self.graph(response)
                 
         if(option == "Management"):
             action = st.radio("Action", ["Add", "Update"])
