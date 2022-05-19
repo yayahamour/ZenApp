@@ -16,4 +16,4 @@ We had to try different approaches such as :
 - FastText + TextHero
 
 For this, we used a [dataset from kaggle](https://www.kaggle.com/datasets/ishantjuyal/emotions-in-text) and another one from [data.world](https://data.world/crowdflower/sentiment-analysis-in-text) in order to try a **data augmentation**.
-We ended up using the **FastText + TextHero** model because it yielded to the best results.
+We ended up using the **Keras** model because it yielded to the best results.
